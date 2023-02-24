@@ -215,7 +215,7 @@ module CatLib where
 
             pullback : ∀{X Y Z : Ob} → (f : X ⇒ Z) → (g : Y ⇒ Z) → PullbackT f g  
             pullback f g = Product×Equalizer⇒Pullback (BinaryProductsT.product (CartesianT.products cartesian)) (equalizer _ _)
-
+    
     module Functor {o ℓ}(𝒞 𝒟 : Category o ℓ) where
         open import Level using (levelOfTerm)
 
