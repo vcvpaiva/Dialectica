@@ -186,11 +186,45 @@ module CatLib where
 
         record PullbackT (f : X ⇒ Z) (g : Y ⇒ Z) : Set (o ⊔ ℓ) where 
             field 
-                {P} : Ob 
+                {P} : Ob    
                 p₁ : P ⇒ X 
                 p₂ : P ⇒ Y 
                 isPullback : IsPullback p₁ p₂ f g 
 
+        module pbiso {f : X ⇒ Z}{g : Y ⇒ Z} where 
+            open import Cubical.Foundations.Isomorphism using (isoToPath; iso ; Iso)
+            open import Cubical.Foundations.Prelude using (_≡⟨_⟩_;≡⟨⟩-syntax;_∎;cong;cong₂;refl; transport; transp; ~_; i0; i1; sym)
+            open IsPullback
+            open PullbackT
+
+            --dumb : {f : X ⇒ Z}{g : Y ⇒ Z}{ P : Ob} → (p₁ p₁' : P ⇒ X) → (p₂ p₂' : P ⇒ Y) → (is : IsPullback p₁ p₂ f g ) → (is' : IsPullback p₁' p₂' f g ) → 
+            --    p₁ ≡ p₁' → p₂ ≡ p₂' → {!   !}
+            -- dumb = {!   !}
+
+            ipbs : ∀{P}{p₁ : P ⇒ X}{p₂ : P ⇒ Y} →  Iso (IsPullback p₁ p₂ f g) (IsPullback p₂ p₁ g f)
+            ipbs {P}{p₁}{p₂} = iso (λ pb → record
+                                                        { commute = sym (pb .commute)
+                                                        ; universal = λ x → (pb .universal) (sym x)
+                                                        ; unique = λ {_}{_}{_}{_}{eq} x y → (pb .unique) {eq = sym eq} y  x
+                                                        ; p₁∘universal≈h₁ =  λ {_}{_}{_}{eq} → (pb .p₂∘universal≈h₂) {eq = sym eq}
+                                                        ; p₂∘universal≈h₂ = λ {_}{_}{_}{eq} → (pb .p₁∘universal≈h₁) {eq = sym eq}
+                                                        }) 
+                                              (λ pb → record
+                                                        { commute = sym (pb .commute)
+                                                        ; universal = λ x → (pb .universal) (sym x)
+                                                        ; unique = λ {_}{_}{_}{_}{eq} x y → (pb .unique) {eq = sym eq} y  x
+                                                        ; p₁∘universal≈h₁ = λ {_}{_}{_}{eq} → (pb .p₂∘universal≈h₂) {eq = sym eq}
+                                                        ; p₂∘universal≈h₂ = λ {_}{_}{_}{eq} → (pb .p₁∘universal≈h₁) {eq = sym eq}
+                                                        }) 
+                                              (λ b → refl) 
+                                              λ b → refl
+
+            open Iso
+            ipb : Iso (PullbackT f g) (PullbackT g f) 
+            ipb  = (iso (λ pb → record { p₁ = pb .p₂ ; p₂ = pb .p₁ ; isPullback = ipbs .fun (pb .isPullback) }) 
+                        (λ pb → record { p₁ = pb .p₂ ; p₂ = pb .p₁ ; isPullback = ipbs .inv (pb .isPullback) }) 
+                        (λ pb → refl) 
+                        λ pb → refl) 
 
 
         open ObjectProduct 𝒞 
@@ -368,4 +402,4 @@ module CatLib where
             field
                 zig : ∀ {A : C.Obj} → counit.η (L.F₀ A) D.∘ L.F₁ (unit.η A) D.≈ D.id
                 zag : ∀ {B : D.Obj} → R.F₁ (counit.η B) C.∘ unit.η (R.F₀ B) C.≈ C.id
-                    -} 
+                    -}  

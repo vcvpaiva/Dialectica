@@ -62,7 +62,7 @@ module _ {o ℓ : Level}(𝒞 : Category o ℓ)where
         DCid : {X : Obj} → Hom X X
         DCid .f = id
         DCid .F = π₂ product
-        DCid .k = {!   !}
+        DCid .k = {! id  !}
             where 
                 _  = [ {!   !} ⇒ {!   !} ] {!   !} × id
         DCid .k-cond = {!   !}
@@ -123,6 +123,12 @@ module _ {o ℓ : Level}(𝒞 : Category o ℓ)where
         _∘DC_ g f .k-cond = {!   !}
     
         -- now try to make a category out of this...
+        open import Cubical.Foundations.Isomorphism using (isoToPath; iso ; Iso)
+        open import Cubical.Foundations.Prelude using (_≡⟨_⟩_;≡⟨⟩-syntax;_∎;cong;cong₂;refl; transport; sym)
+
+        module HomEq where
+            Hom≡ : ∀{A B : Obj}{m₁ m₂ : Hom A B} → f m₁ ≡ f m₂ → F m₁ ≡ F m₂ → {!   !}
+            Hom≡ = {!   !}
 
         DC : Category (o ⊔ ℓ) (o ⊔ ℓ) 
         DC .Ob = Obj
